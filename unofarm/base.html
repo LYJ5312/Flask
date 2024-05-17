@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meata charset="UTF-8" />
+    <title>CBG's HOME</title>
+    <link rel="stylesheet" href="{{url_for ('static',filename='css/bootstrap.min.css') }}" />
+    <link rel="stylesheet" href="{{url_for ('static',filename='css/style.css') }}" />
+    <style>
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-brand img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            width: 40px;
+            /* 원하는 가로 크기로 설정하세요 */
+            height: 40px;
+            /* 원하는 세로 크기로 설정하세요 */
+            margin-right: 10px;
+            /* 로고와 텍스트 간격 조절을 위한 마진 설정 */
+        }
+    </style>
+
+
+
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <img src="{{ url_for('static', filename='/css/images/logo.jpg') }}">
+                CBG's HOME</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            {% if url_for(request.endpoint) == url_for('detector.index') or
+            url_for(request.endpoint) == url_for('detector.search') %}
+            <div class="btn-group">
+                <form method="GET" action="{{ url_for('detector.search') }}" name="dtSearchForm"
+                    onsubmit="return false;">
+                    <input type="text" id="dt-search" class="" placeholder="검색어" name="search"
+                        value="{{ request.args.get('search') if request.args.get('search') else '' }}" />
+                    <button type="submit" onclick="submit_go();" class="">검색</button>
+                </form>
+            </div>
+            {% endif %}
+
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link text-light" href="#">{{ current_user.username }}님, 환영합니다. </a>
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('notice.notices') }}">공지사항</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ url_for('detector.index') }}" class="nav-link">물체감지</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a href="{{ url_for('crud.users') }}" class="nav-link">마이페이지</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ url_for('auth.logout') }}" class="nav-link">로그아웃</a>
+                            </li>
+                            {% else %}
+                            <li class="nav-item">
+                                <a href="{{ url_for('unofarm.index') }}" class="nav-link">우노팜</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('auth.signup') }}">신규등록</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('auth.login') }}">로그인</a>
+                            </li>
+                            {% endif %}
+                        </ul>
+
+            </div>
+    </nav>
+
+    <section class="container">
+        {% block content %}{% endblock %}
+    </section>
+
+    <script>
+        function submit_go() {
+
+            // alert("search btn click");
+            form = document.querySelector("form[name='dtSearchForm']");
+
+            if (!form.search.value) {
+                alert("검색 태그를 입력하세요.");
+                return false;
+            }
+
+            form.submit();
+        }
+    </script>
+
+</body>
+
+</html>
